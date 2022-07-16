@@ -9,9 +9,7 @@ My main goal for this was to build a barebones compiler that can compile mathema
 Each part of the expression is stored in a linked list
 >struct token{
 
->   int type;
-
->    int intlit;
+>   int type, intlit;
 
 >   struct token* next,* prev;
 
