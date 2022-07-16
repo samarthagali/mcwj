@@ -12,6 +12,8 @@ Each part of the expression is stored in a linked list
 >    int intlit;
 >   struct token* next,* prev;
 >};
+
+
 Each operator is assigned to an integer value(of token type) to make storage of data easier 
 The compiler doesn't store negative values so each operator is assigned a value of -1
 
