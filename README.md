@@ -8,9 +8,13 @@ My main goal for this was to build a barebones compiler that can compile mathema
 1)lexer:A barebones lexer that does nothing but scanning and storing each part of the expression
 Each part of the expression is stored in a linked list
 >struct token{
+
 >   int type;
+
 >    int intlit;
+
 >   struct token* next,* prev;
+
 >};
 
 
