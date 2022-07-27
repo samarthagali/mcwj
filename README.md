@@ -34,7 +34,7 @@ The  parser checks the syntax of the given expression
 
 >a+2 is invalid
 
->+,-,,*,/,1,2,3,4,5,6,7,8,9 are valid
+>+,-,*,/,1,2,3,4,5,6,7,8,9 are valid
 
 as can be seen the parser doesn't check if the exp is in infix, prefix or postfix form
 
