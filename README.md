@@ -62,35 +62,20 @@ eval function starts from the bottom left of the tree and moves up
 
 
 >    if (root->left==NULL||root->right==NULL){
- 
 >       return;}
-
 >    eval(root->left);
-
 >    if(root->left->type==INT&&root->right->type==INT&&root->type!=INT){
-
 >        if(root->type==ADD){
-
 >            root->val=root->left->val+root->right->val;}
-
 >        else if(root->type==SUB){
- 
 >           root->val=root->left->val-root->right->val;}
- 
 >       else if(root->type==MUL){
-
 >            root->val=root->left->val*root->right->val; }
-
 >       else{
-
 >            root->val=root->left->val/root->right->val;}
-
 >        root->type=INT;}
-
 >    else{
-
 >        eval(root->right);  }
-
 >    eval(root->right);}
 
 prints the  result of the correctly evaluated expression to stdin
