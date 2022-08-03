@@ -50,3 +50,47 @@ Structure of the tree can be seen as below:
 
 2.5)Interpeter for the ast:This is a non necessary part of the compiler that I created because I thought it would help me understand exactly how the expressions are to be evaluated and converted to assembly.
 It's basic function is to interpret the ast in the correct order
+
+#interpreter for expression tree
+##no idea why im so proud of this lmao
+
+interprets the ast we've built in the parser folder
+
+eval function starts from the bottom left of the tree and moves up
+
+>void eval(struct tnode* root){
+
+
+>    if (root->left==NULL||root->right==NULL){
+ 
+>       return;}
+
+>    eval(root->left);
+
+>    if(root->left->type==INT&&root->right->type==INT&&root->type!=INT){
+
+>        if(root->type==ADD){
+
+>            root->val=root->left->val+root->right->val;}
+
+>        else if(root->type==SUB){
+ 
+>           root->val=root->left->val-root->right->val;}
+ 
+>       else if(root->type==MUL){
+
+>            root->val=root->left->val*root->right->val; }
+
+>       else{
+
+>            root->val=root->left->val/root->right->val;}
+
+>        root->type=INT;}
+
+>    else{
+
+>        eval(root->right);  }
+
+>    eval(root->right);}
+
+prints the  result of the correctly evaluated expression to stdin
