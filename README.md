@@ -60,7 +60,6 @@ eval function starts from the bottom left of the tree and moves up
 
 >void eval(struct tnode* root){
 
-
 >    if (root->left==NULL||root->right==NULL){
 
 >       return;}
