@@ -1,151 +1,91 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
+// / C program for expression tree implementation  
+#include <stdio.h>  
+#include <stdlib.h>  
 #include <string.h>
-
-enum tok{ ADD,SUB,MUL,DIV,INT }op;
-
-struct tnode{
-    int type;
-    int val;
-    struct tnode*left,*right,*parent;    
-};
-
+#include <ctype.h>  
+/* The below structure node is defined as a node of a binary tree consists  
+of left child and the right child, along with the pointer next which points to the next node */  
 char stack[20];
 int top=-1;
 void push(char ele){
-        stack[++top]=ele;
+    stack[++top]=ele;
 }
-int m=0;
+enum tok{ADD,SUB,MUL,DIV,INT}op;
 char pop(){
-    return((char)(stack[top--]));
+    return(stack[top--]);   
 }
-
-// enum tok{ plus,minus,mul,divi,expo,intlit }op;
-char op1[5]={"+-*/"};
-char chcknum[10]={"0123456789"};
+struct node   
+{  
+    int type,val ;  
+    struct node* left ;  
+    struct node* right ;  
+    struct node* nxt ;  
+};
+char post[20];
 int priority(char ele){
-    if (ele=='/' || ele=='*'){
+    if(ele=='/'){
+        return 4;
+    }
+    else if ( ele=='*'){
         return 3;
     }
-    else{
+    else if(ele=='+'){
         return 2;
     }
+    else{
+        return 1;
+    }
 }
+int m=0;
 int countop=0;
-int checkop=0;
-char post[20];
-char *tokstr[] ={"+","-","*","/"};
-
+char op1[5]={"+-*/"};
 void postfix(char infix[]){
     char c;      
     int i =0;
     int j=0;
     while((c=infix[i++])!='\0'){
-        if isdigit(c){
+        if (isdigit(c)){
             post[j++]=c;
+            m++;
         }
         else if(strchr(op1,c)){
             while(priority(stack[top])>=priority(c)&&top!=-1){
                 post[j++]=pop();
             }
             push(c);
-            countop++;
+        }
+        else if(c==' '||c=='\n'||c==EOF){
+            continue;
         }
         else{
             fprintf(stderr,"UNIDENTIFIED LITERAL %c FOR EXPRESSION",c);
             exit (1);
         }
     }
-    m=i-1;
     while(top!=-1){
         post[j++]=pop();
     }
-    if(m-countop!=countop+1){
-        fprintf(stderr,"invalid expression");
-        exit(1);
-    }
-    else{
-        return;
-    }
+    return;
 }
-struct tnode*root1=NULL;
-struct tnode*root2=NULL;
-int i =0;
-void put(){
-    char c;
-    while(isdigit(c=post[i++])){
-        push(c);
-    }
-    int j;
-    
-    struct tnode* n1=(struct tnode*)malloc(sizeof(struct tnode));
-    struct tnode* n2=(struct tnode*)malloc(sizeof(struct tnode));
-    struct tnode* n3=(struct tnode*)malloc(sizeof(struct tnode));
-    char d=post[--i];
-    n1->val=-1;
-    if(c=='+'){
-                n1->type=ADD;
-            }
-            else if(c=='-'){
-                n1->type=SUB;
-            }
-            else if(c=='*'){
-                n1->type=MUL;
-            }
-            else if(c=='/'){
-                n1->type=DIV;
-            }
-
-    if (root1==NULL){
-       root1=n1;
-       n2->val=0+(pop()-'0');
-       n3->val=0+(pop()-'0');
-       n2->type=n3->type=INT;
-       n2->left=n3->left=NULL;
-       n3->right=n2->right=NULL;
-       n2->parent=n3->parent=n1;
-       n1->left=n3;
-       n1->right=n2;
-  
-    
-    }
-    else{
-        if(top==0){
-            n1->left=root1;
-            n2->type=INT;
-            n2->val=0+pop()-'0';
-            n1->right=n2;
-            n2->left=n3->left=n2->right=n3->right=NULL;
-            root1=n1;
-        }
-        else if(top>=1){
-           n2->type=INT;
-           n3->type=INT;
-           n2->val=0+pop()-'0';
-           n3->val=0+pop()-'0';
-           n1->right=n2;
-           n1->left=n3;
-           n2->parent=n3->parent=n1;
-           n2->left=n3->left=n2->right=n3->right=NULL;
-           root2=n1;
-        }
-        else{
-            n1->right=root2;
-            n1->left=root1;
-            root1=n1;
-            root2=NULL;
-        }
-    }
-    i++;
-}
-
-void eval(struct tnode* root){
-
+struct node *head=NULL;  
+/* Helper function that allocates a new node with the 
+given data and NULL left and right pointers. */  
+struct node* newnode(int type,int val)  
+{  
+    struct node* node = (struct node*) malloc ( sizeof ( struct node ) ) ;  
+    node->type = type ;
+    node->val=val;  
+    node->left = NULL ;  
+    node->right = NULL ;  
+    node->nxt = NULL ;  
+    return ( node ) ;  
+}  
+void Inorder(struct node* root)  
+{  
     if (root->left==NULL||root->right==NULL){
         return;
     }
-    eval(root->left);
+    Inorder(root->left);
     if(root->left->type==INT&&root->right->type==INT&&root->type!=INT){
         if(root->type==ADD){
             root->val=root->left->val+root->right->val;
@@ -162,30 +102,118 @@ void eval(struct tnode* root){
         root->type=INT;
     }
     else{
-        eval(root->right);
+        Inorder(root->left);
     }
+    // printf("%d %d  ",root->type,root->val);
 
-    eval(root->right);
+    Inorder(root->right);
+}  
+void inorder(struct node*root) {
+    if(root==NULL){
+        return;
+    }
+    inorder(root->left);
+    printf("%d ",root->val);
+    inorder(root->right);
+} 
+void pushnode ( struct node* x )  
+{  
+    if ( head == NULL )  
+    head = x ;  
+    else  
+    {  
+        ( x )->nxt = head ;  
+        head = x ;  
+    }  
+    // struct node* temp ;  
+    // while ( temp != NULL )  
+    // {  
+    //   printf ( " %c " , temp->info ) ;  
+    //   temp = temp->nxt ;  
+    // }  
+}  
+struct node* popnode()  
+{  
+    // Poping out the top most [pointed with head] element  
+    struct node* n = head ;  
+    head = head->nxt ;  
+    return n ;  
 }
-
-void main(int argc,char**argv){
-    if(argc!=1){
-        fprintf(stderr,"incorrectly passed arugments during interpretation of expression");
+int main(int argc,char**argv)  
+{  
+    if(argc!=2){
+        printf("Incorrectly passed arugments to interpreter\n");
+        fprintf(stderr,"exited with status 1\n");
         exit(1);
     }
-    char infix[20];
-    scanf("%s",infix);
+    FILE *ptr;
+    ptr=fopen(argv[1],"r");
+    if(ptr==NULL){
+        printf("error cannot find file %s]n",argv[1]);
+    }
+    char infix[20];  
+    int i=0;
+    while (!feof(ptr)) {
+        infix[i] = fgetc(ptr);
+        if(strchr(op1,infix[i])){
+            m++;
+            countop++;
+        }
+        else if isdigit(infix[i]){
+            m++;
+        }
+        else{
+            continue;
+        }
+        i++;
+    }
+   if(m-countop!=countop+1){
+        fprintf(stderr,"invalid expression");
+        exit(1);
+    }
+    fclose(ptr);
+    i=0;
     postfix(infix);
-    while(checkop!=countop){
-        put();
-        checkop++;
-    }
-    // inorder(root1);
-    struct tnode*temp=root1;
+    // printf("%s\n",post);
+    struct node*p,*q,*s;
+    int type;
+    while ( post[i]!='\0' )   
+    {  
+        // if read character is operator then popping two  
+        // other elements from stack and making a binary  
+        // tree  
+        if (strchr(op1,post[i]) )  
+        {  
+            if(post[i]=='+'){
+                type=ADD;
+            }
+            else if(post[i]=='-'){
+                type=SUB;
+            }
+            else if(post[i]=='*'){
+                type=MUL;
+            }
+             else{
+                type=DIV;
+            }
+            s = newnode (type,-1) ;  
+            p = popnode() ;  
+            q = popnode() ;  
+            s->left = q ;  
+            s->right = p;  
+            pushnode(s);  
+        }  
+        else {  
+            s = newnode ( INT,post [ i ]-'0' ) ;   
+            pushnode ( s ) ;  
+        }
+        i++;  
+    }  
+    printf ( " Evaluated expression tree is:" ) ;  
+    struct node*temp=s;
     while(temp->type!=INT){
-        eval(root1);
+        Inorder(s);
     }
-    printf("%d",temp->val);
-    exit (0);
-}
-
+    printf("%d\n",temp->val);  
+    exit(0) ;  
+}  
